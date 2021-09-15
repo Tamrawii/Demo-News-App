@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/network/remote/dio_helper.dart';
 import 'package:todo_app/news_app/cubit/states.dart';
+import 'package:todo_app/theme/cubit/theme_mode_cubit.dart';
 
 import 'cubit/cubit.dart';
 
@@ -27,7 +28,7 @@ class NewsApp extends StatelessWidget {
                   IconButton(onPressed: () {}, icon: Icon(Icons.search)),
                   IconButton(
                       onPressed: () {
-                        NewsAppCubit.get(context).changeMode();
+                        context.read<ThemeModeCubit>().changeThemeMode();
                       },
                       icon: Icon(Icons.brightness_4_outlined)),
                 ],
