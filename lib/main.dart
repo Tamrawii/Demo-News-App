@@ -7,6 +7,7 @@ import 'package:todo_app/constants.dart';
 import 'package:todo_app/network/remote/dio_helper.dart';
 import 'package:todo_app/news_app/cubit/cubit.dart';
 import 'package:todo_app/news_app/cubit/states.dart';
+import 'package:todo_app/theme/cubit/theme_mode_cubit.dart';
 import 'bloc_observer.dart';
 import 'news_app/layout.dart';
 import 'style.dart';
@@ -14,7 +15,17 @@ import 'style.dart';
 void main() {
   Bloc.observer = MyBlocObserver();
   DioHelper.init();
-  runApp(MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => NewsAppCubit(),
+        ),
+        BlocProvider(create: (_) => ThemeModeCubit())
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -23,16 +34,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => NewsAppCubit(),
-      child: BlocConsumer<NewsAppCubit, NewsAppStates>(
-        listener: (context, state) {
-          if (state is NewsChangeMode) print('hello');
-        },
+      child: BlocBuilder<ThemeModeCubit, ThemeModeState>(
         builder: (context, state) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            themeMode: NewsAppCubit.get(context).isDark
-                ? ThemeMode.dark
-                : ThemeMode.light,
+            themeMode: state.themeMode,
             theme: ThemeData(
               textTheme: TextTheme(
                   bodyText1: TextStyle(
@@ -69,7 +75,7 @@ class MyApp extends StatelessWidget {
                 floatingActionButtonTheme: FloatingActionButtonThemeData(
                     backgroundColor: Colors.deepOrange),
                 appBarTheme: AppBarTheme(
-                  titleSpacing: 20.0,
+                    titleSpacing: 20.0,
                     systemOverlayStyle: SystemUiOverlayStyle(
                         statusBarColor: HexColor('1A1A2E'),
                         statusBarBrightness: Brightness.light),
